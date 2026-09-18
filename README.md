@@ -23,7 +23,32 @@ systems.
 We release code for `SWE-Bench` (software engineering) and `WebArena` (web-browsing),
 as in corresponding directories.
 
-Before we start, please install required packages by running `pip install -r requirements.txt`.
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then run
+these commands from the repository root:
+
+```bash
+uv python install 3.12
+uv sync --locked
+source .venv/bin/activate
+```
+
+This installs the runtime dependencies, the vendored `mini-swe-agent` in editable
+mode, and the development tools (`pytest`, `pytest-asyncio`, and `ruff`).
+Python 3.12 is required: BrowserGym 0.14.1 pins Playwright 1.44 and greenlet 3.0.3,
+which do not support Python 3.13. Keep the BrowserGym pins to preserve benchmark
+evaluation behavior.
+
+You can also run commands without activating the environment, for example
+`uv run python main.py`, `uv run pytest`, or `uv run ruff check .`.
+
+For WebArena, install Chromium once:
+
+```bash
+uv run playwright install chromium
+```
+
+On Linux, if Playwright reports missing system libraries, install them with
+`uv run playwright install-deps chromium` (requires administrator privileges).
 
 ### 0. LLM Configuration
 Currently we support three model families: 
@@ -87,7 +112,12 @@ To run with scaling setting, please refer to
 `pipeline_scaling.py` and `induce_scaling.py`.
 
 ### 2. SWE-Bench
-We built upon [mini-swe-agent](https://github.com/SWE-agent/mini-swe-agent). First, install it from source by `pip install -e .` under the directory of `./third_party` This will install the dependencies as specified in `pyproject.toml`.
+We built upon [mini-swe-agent](https://github.com/SWE-agent/mini-swe-agent).
+The root `uv sync --locked` command installs `./third_party` in editable mode,
+so changes to the vendored agent are picked up immediately. Verify the CLI with
+`uv run mini-extra --help` from the repository root. The `swebench` subcommand
+initializes its Google GenAI client on import, so it requires the LLM
+configuration above even when invoked with `--help`.
 
 The script `SWE-Bench/run.sh` provides direct running command, which will generate
 result files in the output directory. Before running, make sure the
