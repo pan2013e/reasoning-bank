@@ -1,0 +1,3 @@
+[submodule "cybergym-e2e-extended"]
+	path = cybergym-e2e-extended
+	url = git@github.com:imamnurby/cybergym-e2e-extended.git
